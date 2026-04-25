@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Edit Participant</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<div class="navbar">
+    <a href="/">Home</a>
+    <a href="/events">View Events</a>
+    <a href="/participants">Participants</a>
+</div>
+
+<h2>Edit Participant</h2>
+
+<form action="/update_participant/{{ participant[0] }}" method="POST">
+
+    <label>Participant Name:</label><br>
+    <input type="text" name="participant_name" value="{{ participant[1] }}"><br><br>
+
+    <label>Roll No:</label><br>
+    <input type="text" name="roll_no" value="{{ participant[2] }}"><br><br>
+
+    <label>Department:</label><br>
+    <input type="text" name="department" value="{{ participant[3] }}"><br><br>
+
+    <label>Year of Study:</label><br>
+    <input type="number" name="year_of_study" value="{{ participant[4] }}"><br><br>
+
+    <label>Participant Type:</label><br>
+    <input type="text" name="participant_type" value="{{ participant[5] }}"><br><br>
+
+    <button type="submit">Update</button>
+
+</form>
+
+</body>
+</html>
