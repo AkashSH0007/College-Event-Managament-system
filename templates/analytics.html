@@ -16,13 +16,20 @@
 
 <h2>Analytics Dashboard</h2>
 
-<h3>Total Events: {{ total_events }}</h3>
-<h3>Total Participants: {{ total_participants }}</h3>
+<div class="card-container">
+    <div class="card">Total Events: {{ total_events }}</div>
+    <div class="card">Total Participants: {{ total_participants }}</div>
+</div>
 
-<canvas id="eventChart"></canvas>
-<canvas id="participantDeptChart"></canvas>
-<canvas id="participantTypeChart"></canvas>
-<canvas id="categoryChart"></canvas>
+<div class="chart-row">
+    <canvas id="eventChart"></canvas>
+    <canvas id="participantDeptChart"></canvas>
+</div>
+
+<div class="chart-row">
+    <canvas id="participantTypeChart"></canvas>
+    <canvas id="categoryChart"></canvas>
+</div>
 
 <script>
 new Chart(document.getElementById('eventChart'), {
@@ -31,8 +38,12 @@ new Chart(document.getElementById('eventChart'), {
         labels: {{ departments|tojson }},
         datasets: [{
             label: 'Department-wise Events',
-            data: {{ event_counts|tojson }}
+            data: {{ event_counts|tojson }},
+            backgroundColor: 'skyblue'
         }]
+    },
+    options: {
+        responsive: false
     }
 });
 
@@ -42,8 +53,12 @@ new Chart(document.getElementById('participantDeptChart'), {
         labels: {{ participant_departments|tojson }},
         datasets: [{
             label: 'Department-wise Participants',
-            data: {{ participant_counts|tojson }}
+            data: {{ participant_counts|tojson }},
+            backgroundColor: 'lightgreen'
         }]
+    },
+    options: {
+        responsive: false
     }
 });
 
@@ -52,8 +67,12 @@ new Chart(document.getElementById('participantTypeChart'), {
     data: {
         labels: {{ participant_types|tojson }},
         datasets: [{
-            data: {{ participant_type_counts|tojson }}
+            data: {{ participant_type_counts|tojson }},
+            backgroundColor: ['blue', 'pink']
         }]
+    },
+    options: {
+        responsive: false
     }
 });
 
@@ -62,8 +81,12 @@ new Chart(document.getElementById('categoryChart'), {
     data: {
         labels: {{ categories|tojson }},
         datasets: [{
-            data: {{ category_counts|tojson }}
+            data: {{ category_counts|tojson }},
+            backgroundColor: ['orange', 'purple']
         }]
+    },
+    options: {
+        responsive: false
     }
 });
 </script>
