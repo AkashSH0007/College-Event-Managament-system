@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Analytics Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<div class="navbar">
+    <a href="/">Home</a>
+    <a href="/events">View Events</a>
+    <a href="/participant">Participants</a>
+    <a href="/analytics">Analytics</a>
+</div>
+
+<h2>Analytics Dashboard</h2>
+
+<h3>Total Events: {{ total_events }}</h3>
+<h3>Total Participants: {{ total_participants }}</h3>
+
+<canvas id="eventChart"></canvas>
+<canvas id="participantDeptChart"></canvas>
+<canvas id="participantTypeChart"></canvas>
+<canvas id="categoryChart"></canvas>
+
+<script>
+new Chart(document.getElementById('eventChart'), {
+    type: 'bar',
+    data: {
+        labels: {{ departments|tojson }},
+        datasets: [{
+            label: 'Department-wise Events',
+            data: {{ event_counts|tojson }}
+        }]
+    }
+});
+
+new Chart(document.getElementById('participantDeptChart'), {
+    type: 'bar',
+    data: {
+        labels: {{ participant_departments|tojson }},
+        datasets: [{
+            label: 'Department-wise Participants',
+            data: {{ participant_counts|tojson }}
+        }]
+    }
+});
+
+new Chart(document.getElementById('participantTypeChart'), {
+    type: 'pie',
+    data: {
+        labels: {{ participant_types|tojson }},
+        datasets: [{
+            data: {{ participant_type_counts|tojson }}
+        }]
+    }
+});
+
+new Chart(document.getElementById('categoryChart'), {
+    type: 'doughnut',
+    data: {
+        labels: {{ categories|tojson }},
+        datasets: [{
+            data: {{ category_counts|tojson }}
+        }]
+    }
+});
+</script>
+
+</body>
+</html>
