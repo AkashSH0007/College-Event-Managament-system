@@ -1,8 +1,10 @@
-from flask import Flask, render_template, request, redirect
+from flask import Flask, render_template, request, redirect, session
+from werkzeug.security import check_password_hash
 import psycopg2
 import os
 
 app = Flask(__name__)
+app.secret_key = 'collegeeventsecret'
 
 conn = psycopg2.connect(
     dbname="postgres",
@@ -14,11 +16,31 @@ conn = psycopg2.connect(
 
 cur = conn.cursor()
 
-@app.route('/')
-def home():
-    
+# LOGIN
+@app.route('/', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        email = request.form['email']
+        password = request.form['password']
+
+        cur.execute("SELECT password, role FROM users WHERE email=%s", (email,))
+        user = cur.fetchone()
+
+        if user and check_password_hash(user[0], password):
+            session['user'] = email
+            session['role'] = user[1]
+            return redirect('/dashboard')
+        else:
+            return "Invalid Login"
+
+    return render_template('login.html')
+
+# DASHBOARD AFTER LOGIN
+@app.route('/dashboard')
+def dashboard():
     return render_template('add_event.html')
 
+# EVENTS
 @app.route('/submit', methods=['POST'])
 def submit():
     event_name = request.form['event_name']
@@ -34,7 +56,6 @@ def submit():
     )
 
     conn.commit()
-
     return redirect('/events')
 
 @app.route('/events')
@@ -42,10 +63,7 @@ def show_events():
     search = request.args.get('search')
 
     if search:
-        cur.execute(
-            "SELECT * FROM events WHERE event_name ILIKE %s",
-            ('%' + search + '%',)
-        )
+        cur.execute("SELECT * FROM events WHERE event_name ILIKE %s", ('%' + search + '%',))
     else:
         cur.execute("SELECT * FROM events")
 
@@ -79,6 +97,7 @@ def update_event(id):
     conn.commit()
     return redirect('/events')
 
+# PARTICIPANTS
 @app.route('/participant')
 def participant():
     return render_template('add_participant.html')
@@ -100,7 +119,6 @@ def submit_participant():
 
     conn.commit()
     return redirect('/participants')
-
 
 @app.route('/participants')
 def show_participants():
@@ -137,30 +155,24 @@ def update_participant(id):
     conn.commit()
     return redirect('/participants')
 
+# ANALYTICS
 @app.route('/analytics')
 def analytics():
-    cur = conn.cursor()
-
-    # Cards
     cur.execute("SELECT COUNT(*) FROM events")
     total_events = cur.fetchone()[0]
 
     cur.execute("SELECT COUNT(*) FROM participants")
     total_participants = cur.fetchone()[0]
 
-    # Department-wise events
     cur.execute("SELECT department, COUNT(*) FROM events GROUP BY department")
     event_data = cur.fetchall()
 
-    # Department-wise participants
     cur.execute("SELECT department, COUNT(*) FROM participants GROUP BY department")
     participant_dept_data = cur.fetchall()
 
-    # Participant type
     cur.execute("SELECT participant_type, COUNT(*) FROM participants GROUP BY participant_type")
     participant_type_data = cur.fetchall()
 
-    # Event category
     cur.execute("SELECT category, COUNT(*) FROM events GROUP BY category")
     category_data = cur.fetchall()
 
@@ -189,7 +201,6 @@ def analytics():
         categories=categories,
         category_counts=category_counts
     )
-
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
