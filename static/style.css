@@ -63,3 +63,28 @@ font-weight: bold;
 color: #3498db;
 }
 
+.card-container {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.card {
+    background: #f2d96b;
+    padding: 20px;
+    width: 200px;
+    font-weight: bold;
+    border-radius: 8px;
+}
+
+.chart-row {
+    display: flex;
+    gap: 30px;
+    margin-bottom: 30px;
+}
+
+canvas {
+    width: 400px !important;
+    height: 300px !important;
+}
+
