@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, session
+from flask import Flask, render_template, request, redirect, session, url_for
 from werkzeug.security import check_password_hash
 import psycopg2
 import os
@@ -218,7 +218,7 @@ def results():
 @app.route('/logout')
 def logout():
     session.clear()
-    return redirect('/login')
+    return redirect(url_for('login'))
 
 
 if __name__ == '__main__':
