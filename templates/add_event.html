@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Add Event</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<div class="navbar">
+    <a href="/">Home</a>
+    <a href="/events">View Events</a>
+    <a href="/participants">Participants</a>
+    <a href="/participant">Add Participant</a>
+    <a href="/results">Results</a>
+    <a href="/analytics">Analytics</a>
+    <a href="/logout">Logout</a>
+</div>
+
+<label>Fest Name:</label><br>
+<select name="fest_name" required>
+    <option value="Ojas">Ojas</option>
+    <option value="Samyuti">Samyuti</option>
+</select><br><br>
+
+<h2>Add Event</h2>
+
+<form action="/submit" method="POST">
+    <label>Event Name:</label><br>
+    <input type="text" name="event_name"><br><br>
+
+    <label>Department:</label><br>
+    <input type="text" name="department"><br><br>
+
+    <label>Category:</label><br>
+    <input type="text" name="category"><br><br>
+
+    <label>Date:</label><br>
+    <input type="date" name="event_date"><br><br>
+
+    <label>Venue:</label><br>
+    <input type="text" name="venue"><br><br>
+
+    <label>Organizer:</label><br>
+    <input type="text" name="organizer_name"><br><br>
+
+    <button type="submit">Submit</button>
+</form>
+
+</body>
+</html>
