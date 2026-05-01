@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<div class="navbar">
+    <span class="logo">🎓 EventSphere</span>
+
+    <div class="nav-links">
+        <a href="/dashboard">Home</a>
+        <a href="/events">View Events</a>
+        <a href="/participants">Participants</a>
+        <a href="/logout">Logout</a>
+    </div>
+</div>
+
+
+<h2 style="margin-bottom:20px;">👋 Welcome Coordinator</h2>
+
+<div class="dashboard-stats">
+    <div class="stat-card">
+        <h1>{{ total_events }}</h1>
+        <p>Events</p>
+    </div>
+
+    <div class="stat-card">
+        <h1>{{ total_participants }}</h1>
+        <p>Participants</p>
+    </div>
+
+    <div class="stat-card">
+        <h1>{{ total_results }}</h1>
+        <p>Results</p>
+    </div>
+</div>
+
+
+<div class="action-cards">
+    <a href="/add_event" class="action-card">➕<span>Add Event</span></a>
+    <a href="/participant" class="action-card">👥<span>Add Participant</span></a>
+    <a href="/analytics" class="action-card">📊<span>Analytics</span></a>
+    <a href="/results" class="action-card">🏆<span>Results</span></a>
+</div>
+
+<footer class="footer">
+    <div class="footer-container">
+
+        <div class="footer-left">
+            <h3>🎓 EventSphere</h3>
+            <p>Manage college fests, participants, and results efficiently.</p>
+        </div>
+
+        <div class="footer-center">
+            <a href="/events">Events</a>
+            <a href="/participants">Participants</a>
+            <a href="/results">Results</a>
+            <a href="/analytics">Analytics</a>
+        </div>
+
+        <div class="footer-right">
+            <p>© 2026 EventSphere</p>
+            <small>Built for college management</small>
+        </div>
+
+    </div>
+</footer>
+
+<script>
+document.querySelector('.user-menu').addEventListener('click', function () {
+    this.classList.toggle('active');
+});
+</script>
+
+</body>
+</html>

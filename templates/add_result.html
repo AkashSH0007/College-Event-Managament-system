@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Add Result</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<div class="navbar">
+    <span class="logo">🎓 EventSphere</span>
+</div>
+
+<div class="form-container">
+
+    <h2>🏆 Announce Result</h2>
+
+    {% if request.args.get('error') %}
+    <div class="error-box">
+        ⚠️ Rank already assigned for this event!
+    </div>
+    {% endif %}
+
+    <form action="/submit_result" method="POST">
+
+        <label>Event</label>
+        <select name="event_id" onchange="loadParticipants(this.value)" required>
+            {% for event in events %}
+                <option value="{{ event[0] }}">{{ event[1] }}</option>
+            {% endfor %}
+        </select>
+
+        <label>Participant</label>
+        <select name="participant_id" id="participantSelect" required>
+            <option>Select event first</option>
+
+            {% for p in participants %}
+                <option value="{{ p[0] }}">{{ p[1] }}</option>
+            {% endfor %}
+        </select>
+
+        <label>Rank</label>
+        <input type="number" name="rank" id="rank" oninput="autoPrize(this.value)" required>
+
+        <label>Prize</label>
+        <input type="text" name="prize" id="prize" required>
+
+        <button type="submit">Add Result</button>
+
+    </form>
+
+</div>
+
+<script>
+function autoPrize(rank) {
+    let prize = document.getElementById("prize");
+
+    if (rank == 1) prize.value = "🥇 Gold Medal";
+    else if (rank == 2) prize.value = "🥈 Silver Medal";
+    else if (rank == 3) prize.value = "🥉 Bronze Medal";
+    else prize.value = "";
+}
+</script>
+
+<script>
+function loadParticipants(eventId) {
+    fetch(`/get_participants/${eventId}`)
+    .then(res => res.json())
+    .then(data => {
+        let select = document.getElementById("participantSelect");
+        select.innerHTML = "";
+
+        data.forEach(p => {
+            let option = document.createElement("option");
+            option.value = p[0];
+            option.text = p[1];
+            select.appendChild(option);
+        });
+    });
+}
+</script>
+
+<footer class="footer">
+    <div class="footer-container">
+
+        <div class="footer-left">
+            <h3>🎓 EventSphere</h3>
+            <p>Manage college fests, participants, and results efficiently.</p>
+        </div>
+
+        <div class="footer-center">
+            <a href="/events">Events</a>
+            <a href="/participants">Participants</a>
+            <a href="/results">Results</a>
+            <a href="/analytics">Analytics</a>
+        </div>
+
+        <div class="footer-right">
+            <p>© 2026 EventSphere</p>
+            <small>Built for college management</small>
+        </div>
+
+    </div>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Profile</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<!-- NAVBAR (same as your other pages) -->
+<div class="navbar">
+    <span class="logo">🎓 EventSphere</span>
+
+    <div class="nav-links">
+        <a href="/dashboard">Home</a>
+        <a href="/events">View Events</a>
+        <a href="/participants">Participants</a>
+        <a href="/results">Results</a>
+
+        <div class="user-menu">
+            👤 {{ session.get('username', 'User') }}
+
+            <div class="dropdown">
+                <a href="/profile">View Profile</a>
+                
+                <a href="/logout">Logout</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MAIN PROFILE -->
+<div class="main-container">
+
+    <div class="profile-card">
+
+        <!-- USER HEADER -->
+        <div class="profile-header">
+            <div class="avatar">👤</div>
+            <h2>{{ session.get('username', 'User') }}</h2>
+            <p class="role">{{ session.get('role') }}</p>
+        </div>
+
+        <!-- DETAILS -->
+        <div class="profile-details">
+            <p><strong>User ID:</strong> {{ session.get('user_id') }}</p>
+            <p><strong>Role:</strong> {{ session.get('role') }}</p>
+        </div>
+
+        <!-- STATS -->
+        <div class="profile-stats">
+            <div class="stat-box">
+                <h3>{{ total_events }}</h3>
+                <p>Events</p>
+            </div>
+
+            <div class="stat-box">
+                <h3>{{ total_participations }}</h3>
+                <p>Participations</p>
+            </div>
+
+            <div class="stat-box">
+                <h3>{{ total_results }}</h3>
+                <p>Results</p>
+            </div>
+        </div>
+
+        <!-- ACTIONS -->
+        <div class="profile-actions">
+            <a href="/events" class="btn">View Events</a>
+            <a href="/settings" class="btn secondary">Settings</a>
+        </div>
+
+    </div>
+
+</div>
+
+<!-- JS for dropdown -->
+<script>
+document.querySelector('.user-menu').addEventListener('click', function () {
+    this.classList.toggle('active');
+});
+</script>
+
+</body>
+</html>

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Events</title>
+    <title>My Events</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
@@ -59,71 +59,27 @@
         {% endfor %}
     </div>
 
-    <!-- EVENTS SECTION -->
-    {% if selected_fest %}
+<h2>My Registered Events</h2>
 
-        <!-- UPCOMING -->
-        <h2>🟢 Upcoming Events</h2>
-        <div class="event-grid">
-            {% for event in upcoming %}
-            <div class="event-card upcoming">
-                <h3>{{ event[1] }}</h3>
-                <p><strong>Dept:</strong> {{ event[2] }}</p>
-                <p><strong>Date:</strong> {{ event[4] }}</p>
+<table border="1" cellpadding="10" cellspacing="0">
+    <tr>
+        <th>Fest Name</th>
+        <th>Event Name</th>
+        <th>Department</th>
+        <th>Category</th>
+    </tr>
 
-                {% if session['role'].strip()|lower == 'coordinator' %}
-                    <a href="/edit/{{ event[0] }}">Edit</a>
-                    <a href="/delete/{{ event[0] }}">Delete</a>
-                {% elif session['role'].strip()|lower == 'participant' %}
-                    {% if event[0] in registered_events %}
-                        <span class="registered-badge">✔ Registered</span>
-                    {% else %}
-                        <a href="/register/{{ event[0] }}">Register</a>
-                    {% endif %}
-                {% endif %}
-            </div>
-            {% else %}
-                <p>No upcoming events</p>
-            {% endfor %}
-        </div>
+    {% for event in my_events %}
+    <tr>
+        <td>{{ event[3] }}</td>
+        <td>{{ event[0] }}</td>
+        <td>{{ event[1] }}</td>
+        <td>{{ event[2] }}</td>
+    </tr>
+    {% endfor %}
 
-        <!-- ONGOING -->
-        <h2>🔵 Ongoing Events</h2>
-        <div class="event-grid">
-            {% for event in ongoing %}
-            <div class="event-card ongoing">
-                <h3>{{ event[1] }}</h3>
-                <p><strong>Dept:</strong> {{ event[2] }}</p>
-                <p><strong>Date:</strong> {{ event[4] }}</p>
-            </div>
-            {% else %}
-                <p>No ongoing events</p>
-            {% endfor %}
-        </div>
+</table>
 
-        <!-- PAST -->
-        <h2>⚫ Past Events</h2>
-        <div class="event-grid">
-            {% for event in past %}
-            <div class="event-card past">
-                <h3>{{ event[1] }}</h3>
-                <p><strong>Dept:</strong> {{ event[2] }}</p>
-                <p><strong>Date:</strong> {{ event[4] }}</p>
-
-                <span class="badge past-badge">Completed</span>
-            </div>
-            {% else %}
-                <p>No past events</p>
-            {% endfor %}
-        </div>
-
-    {% else %}
-        <p class="center-text">👉 Please select a fest to view events</p>
-    {% endif %}
-
-</div>
-
-<!-- ================= FOOTER ================= -->
 <footer class="footer">
     <div class="footer-container">
 
@@ -146,12 +102,6 @@
 
     </div>
 </footer>
-
-<script>
-document.querySelector('.user-menu').addEventListener('click', function () {
-    this.classList.toggle('active');
-});
-</script>
 
 </body>
 </html>

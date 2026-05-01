@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Create Account</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<div class="login-box">
+    <h2>Create Participant Account</h2>
+
+    <form method="POST">
+
+        <input type="text" name="name" placeholder="Enter Name" required><br><br>
+
+        <input type="text" name="roll_no" placeholder="Enter Roll Number" required><br><br>
+
+        <input type="text" name="department" placeholder="Enter Department" required><br><br>
+
+        <input type="number" name="year" placeholder="Enter Year" required><br><br>
+
+        <select name="type" required>
+            <option value="">Select Type</option>
+            <option value="Internal">Internal</option>
+            <option value="External">External</option>
+        </select><br><br>
+
+        <input type="email" name="email" placeholder="Enter Email" required><br><br>
+
+        <input type="password" name="password" placeholder="Enter Password" required><br><br>
+
+        <button type="submit">Create Account</button>
+
+    </form>
+
+    <p>Already have account? <a href="/">Login</a></p>
+
+</div>
+
+<footer class="footer">
+    <div class="footer-container">
+
+        <div class="footer-left">
+            <h3>🎓 EventSphere</h3>
+            <p>Manage college fests, participants, and results efficiently.</p>
+        </div>
+
+        <div class="footer-center">
+            <a href="/events">Events</a>
+            <a href="/participants">Participants</a>
+            <a href="/results">Results</a>
+            <a href="/analytics">Analytics</a>
+        </div>
+
+        <div class="footer-right">
+            <p>© 2026 EventSphere</p>
+            <small>Built for college management</small>
+        </div>
+
+    </div>
+</footer>
+
+</body>
+</html>

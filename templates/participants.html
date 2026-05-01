@@ -6,45 +6,118 @@
 </head>
 <body>
 
+<!-- ================= NAVBAR ================= -->
 <div class="navbar">
-    <a href="/">Home</a>
-    <a href="/events">View Events</a>
-    <a href="/participants">Participants</a>
-    <a href="/participant">Add Participant</a>
-    <a href="/results">Results</a>
-    <a href="/analytics">Analytics</a>
-    <a href="/logout">Logout</a>
+    <span class="logo">🎓 EventSphere</span>
+
+    <div class="nav-links">
+        {% if session['role'].strip()|lower == 'coordinator' %}
+            <a href="/dashboard">Home</a>
+            <a href="/events">View Events</a>
+            <a href="/participants">Participants</a>
+        {% elif session['role'].strip()|lower == 'participant' %}
+            <a href="/events">View Events</a>
+            <a href="/participants">Participants</a>
+            <a href="/my_events">My Events</a>
+            <a href="/results">Results</a>
+            <a href="/analytics">Analytics</a>
+        {% endif %}
+
+        <!-- USER MENU -->
+        <div class="user-menu">
+            👤 {{ session.get('username', 'User') }}
+
+            <div class="dropdown">
+                <a href="/profile">View Profile</a>
+                
+                <a href="/logout">Logout</a>
+            </div>
+        </div>
+    </div>
 </div>
+
+<!-- ================= MAIN CONTAINER ================= -->
+<div class="main-container">
+
+    <div class="card-container">
+        {% for fest in fests %}
+            <a href="/events?fest={{ fest[0] }}"
+               class="fest-card {% if selected_fest == fest[0] %}active-fest{% endif %}">
+
+                🎊 {{ fest[0] }} <br>
+                <small>{{ fest[1] }} Events | {{ fest[2] }} Participants</small>
+
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: {{ fest[3] }}%;"></div>
+                </div>
+
+                <small>{{ fest[3] }}%</small>
+            </a>
+        {% endfor %}
+    </div>
 
 <h2>All Participants</h2>
 
-<table border="1" cellpadding="10" cellspacing="0">
-    <tr>
-        <th>ID</th>
-        <th>Name</th>
-        <th>Roll No</th>
-        <th>Department</th>
-        <th>Year</th>
-        <th>Type</th>
-        <th>Action</th>
-    </tr>
+<form method="GET" action="/participants" style="margin-bottom:20px;">
+    <input type="text" name="search" placeholder="Search participant / fest / event">
+    <button type="submit">Search</button>
+</form>
 
+<div class="event-grid">
     {% for p in participants %}
-    <tr>
-        <td>{{ p[0] }}</td>
-        <td>{{ p[1] }}</td>
-        <td>{{ p[2] }}</td>
-        <td>{{ p[3] }}</td>
-        <td>{{ p[4] }}</td>
-        <td>{{ p[5] }}</td>
-        <td>
-            <a href="/edit_participant/{{ p[0] }}">Edit</a> |
-            <a href="/delete_participant/{{ p[0] }}">Delete</a>
-        </td>
-    </tr>
-    {% endfor %}
+    <div class="event-card">
+        <h3>{{ p[1] }}</h3>
 
-</table>
+        <p><strong>Roll No:</strong> {{ p[2] }}</p>
+        <p><strong>Department:</strong> {{ p[3] }}</p>
+        <p><strong>Year:</strong> {{ p[4] }}</p>
+
+        <p>
+            <strong>Type:</strong>
+            <span class="badge {% if p[5]|lower == 'internal' %}internal-badge{% else %}external-badge{% endif %}">
+                {{ p[5] }}
+            </span>
+        </p>
+
+        <p><strong>Fest:</strong> {{ p[6] if p[6] else '-' }}</p>
+        <p><strong>Events:</strong> {{ p[7] if p[7] else '-' }}</p>
+
+        {% if session['role'].strip()|lower == 'coordinator' %}
+            <a href="/edit_participant/{{ p[0] }}">✏️</a>
+            <a href="/delete_participant/{{ p[0] }}">🗑️</a>
+        {% endif %}
+    </div>
+    {% endfor %}
+</div>
+
+<footer class="footer">
+    <div class="footer-container">
+
+        <div class="footer-left">
+            <h3>🎓 EventSphere</h3>
+            <p>Manage college fests, participants, and results efficiently.</p>
+        </div>
+
+        <div class="footer-center">
+            <a href="/events">Events</a>
+            <a href="/participants">Participants</a>
+            <a href="/results">Results</a>
+            <a href="/analytics">Analytics</a>
+        </div>
+
+        <div class="footer-right">
+            <p>© 2026 EventSphere</p>
+            <small>Built for college management</small>
+        </div>
+
+    </div>
+</footer>
+
+<script>
+document.querySelector('.user-menu').addEventListener('click', function () {
+    this.classList.toggle('active');
+});
+</script>
 
 </body>
 </html>

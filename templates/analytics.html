@@ -2,94 +2,269 @@
 <html>
 <head>
     <title>Analytics Dashboard</title>
+
+    <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
+
 <body>
 
+<!-- ================= NAVBAR ================= -->
 <div class="navbar">
-    <a href="/">Home</a>
-    <a href="/events">View Events</a>
-    <a href="/participant">Participants</a>
-    <a href="/results">Results</a>
-    <a href="/analytics">Analytics</a>
-    <a href="/logout">Logout</a>
+    <span class="logo">🎓 EventSphere</span>
+
+    <div class="nav-links">
+        {% if session['role'].strip()|lower == 'coordinator' %}
+            <a href="/dashboard">Home</a>
+            <a href="/events">View Events</a>
+            <a href="/participants">Participants</a>
+        {% elif session['role'].strip()|lower == 'participant' %}
+            <a href="/events">View Events</a>
+            <a href="/participants">Participants</a>
+            <a href="/my_events">My Events</a>
+            <a href="/results">Results</a>
+            <a href="/analytics">Analytics</a>
+        {% endif %}
+
+        <!-- USER MENU -->
+        <div class="user-menu">
+            👤 {{ session.get('username', 'User') }}
+
+            <div class="dropdown">
+                <a href="/profile">View Profile</a>
+                
+                <a href="/logout">Logout</a>
+            </div>
+        </div>
+    </div>
 </div>
 
-<h2>Analytics Dashboard</h2>
+<!-- ================= MAIN CONTAINER ================= -->
+<div class="main-container">
 
-<div class="card-container">
-    <div class="card">Total Events: {{ total_events }}</div>
-    <div class="card">Total Participants: {{ total_participants }}</div>
+    
+    <div class="card-container">
+        {% for fest in fests %}
+            <a href="/events?fest={{ fest[0] }}"
+               class="fest-card {% if selected_fest == fest[0] %}active-fest{% endif %}">
+
+                🎊 {{ fest[0] }} <br>
+                <small>{{ fest[1] }} Events | {{ fest[2] }} Participants</small>
+
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: {{ fest[3] }}%;"></div>
+                </div>
+
+                <small>{{ fest[3] }}%</small>
+            </a>
+        {% endfor %}
+    </div>
+<!-- MAIN -->
+<div class="analytics-container">
+
+    <h2>📊 Analytics Dashboard</h2>
+
+    <!-- STATS -->
+    <div class="analytics-stats">
+        <div class="analytics-card">
+            <h3>🎉 Events</h3>
+            <p id="eventCount">0</p>
+        </div>
+
+        <div class="analytics-card">
+            <h3>👥 Participants</h3>
+            <p id="participantCount">0</p>
+        </div>
+    </div>
+
+    <!-- ROW 1 -->
+    <div class="chart-row">
+
+        <div class="chart-card">
+            <h3>📊 Events by Department</h3>
+            <p class="chart-desc">
+                Shows how many events are conducted by each department.
+            </p>
+            <canvas id="eventsChart"></canvas>
+            <p class="insight">{{ events_insight }}</p>
+        </div>
+
+        <div class="chart-card">
+            <h3>👥 Participants by Department</h3>
+            <p class="chart-desc">
+                Displays participant distribution across departments.
+            </p>
+            <canvas id="participantsChart"></canvas>
+            <p class="insight">{{ participants_insight }}</p>
+        </div>
+
+    </div>
+
+    <!-- ROW 2 -->
+    <div class="chart-row">
+
+        <div class="chart-card">
+            <h3>🎯 Participant Type</h3>
+            <p class="chart-desc">
+                Internal vs External participation breakdown.
+            </p>
+            <canvas id="typeChart"></canvas>
+            <p class="insight">{{ type_insight }}</p>
+        </div>
+
+        <div class="chart-card">
+            <h3>🏆 Event Categories</h3>
+            <p class="chart-desc">
+                Distribution of events across different categories.
+            </p>
+            <canvas id="categoryChart"></canvas>
+            <p class="insight">{{ category_insight }}</p>
+        </div>
+
+    </div>
+
 </div>
 
-<div class="chart-row">
-    <canvas id="eventChart"></canvas>
-    <canvas id="participantDeptChart"></canvas>
-</div>
-
-<div class="chart-row">
-    <canvas id="participantTypeChart"></canvas>
-    <canvas id="categoryChart"></canvas>
-</div>
-
+<!-- CHART SCRIPT -->
 <script>
-new Chart(document.getElementById('eventChart'), {
+function getGradient(ctx, color1, color2) {
+    const gradient = ctx.createLinearGradient(0, 0, 0, 300);
+    gradient.addColorStop(0, color1);
+    gradient.addColorStop(1, color2);
+    return gradient;
+}
+
+const eventCtx = document.getElementById('eventsChart').getContext('2d');
+
+new Chart(eventCtx, {
     type: 'bar',
     data: {
-        labels: {{ departments|tojson }},
+        labels: {{ departments | safe }},
         datasets: [{
-            label: 'Department-wise Events',
-            data: {{ event_counts|tojson }},
-            backgroundColor: 'skyblue'
+            data: {{ event_counts | safe }},
+            backgroundColor: getGradient(eventCtx, '#60a5fa', '#2563eb'),
+            borderRadius: 12
         }]
     },
     options: {
-        responsive: false
+        indexAxis: 'y',
+        animation: {
+            duration: 1200,
+            easing: 'easeOutQuart'
+        },
+        plugins: { legend: { display: false } }
     }
 });
 
-new Chart(document.getElementById('participantDeptChart'), {
-    type: 'bar',
+const partCtx = document.getElementById('participantsChart').getContext('2d');
+
+new Chart(partCtx, {
+    type: 'line',
     data: {
-        labels: {{ participant_departments|tojson }},
+        labels: {{ participant_departments | safe }},
         datasets: [{
-            label: 'Department-wise Participants',
-            data: {{ participant_counts|tojson }},
-            backgroundColor: 'lightgreen'
+            data: {{ participant_counts | safe }},
+            borderColor: '#22c55e',
+            backgroundColor: getGradient(partCtx, 'rgba(34,197,94,0.4)', 'rgba(34,197,94,0)'),
+            fill: true,
+            tension: 0.4,
+            pointRadius: 5
         }]
     },
     options: {
-        responsive: false
+        animation: {
+            duration: 1200
+        }
     }
 });
 
-new Chart(document.getElementById('participantTypeChart'), {
-    type: 'pie',
+new Chart(document.getElementById('typeChart'), {
+    type: 'doughnut',
     data: {
-        labels: {{ participant_types|tojson }},
+        labels: {{ participant_types | safe }},
         datasets: [{
-            data: {{ participant_type_counts|tojson }},
-            backgroundColor: ['blue', 'pink']
+            data: {{ participant_type_counts | safe }},
+            backgroundColor: ['#3b82f6', '#9333ea'],
+            borderWidth: 0
         }]
     },
     options: {
-        responsive: false
+        cutout: '65%',
+        animation: { duration: 1200 }
     }
 });
 
 new Chart(document.getElementById('categoryChart'), {
-    type: 'doughnut',
+    type: 'polarArea',
     data: {
-        labels: {{ categories|tojson }},
+        labels: {{ categories | safe }},
         datasets: [{
-            data: {{ category_counts|tojson }},
-            backgroundColor: ['orange', 'purple']
+            data: {{ category_counts | safe }},
+            backgroundColor: [
+                '#f59e0b',
+                '#3b82f6',
+                '#22c55e',
+                '#9333ea'
+            ]
         }]
     },
     options: {
-        responsive: false
+        animation: { duration: 1200 }
     }
+});
+</script>
+
+<script>
+function animateValue(id, end) {
+    let start = 0;
+    let duration = 1000;
+    let step = end / (duration / 16);
+
+    let obj = document.getElementById(id);
+
+    let counter = setInterval(() => {
+        start += step;
+        if (start >= end) {
+            start = end;
+            clearInterval(counter);
+        }
+        obj.innerText = Math.floor(start);
+    }, 16);
+}
+
+animateValue("eventCount", {{ total_events }});
+animateValue("participantCount", {{ total_participants }});
+</script>
+
+<footer class="footer">
+    <div class="footer-container">
+
+        <div class="footer-left">
+            <h3>🎓 EventSphere</h3>
+            <p>Manage college fests, participants, and results efficiently.</p>
+        </div>
+
+        <div class="footer-center">
+            <a href="/events">Events</a>
+            <a href="/participants">Participants</a>
+            <a href="/results">Results</a>
+            <a href="/analytics">Analytics</a>
+        </div>
+
+        <div class="footer-right">
+            <p>© 2026 EventSphere</p>
+            <small>Built for college management</small>
+        </div>
+
+    </div>
+</footer>
+
+<script>
+document.querySelector('.user-menu').addEventListener('click', function () {
+    this.classList.toggle('active');
 });
 </script>
 
